@@ -6,7 +6,6 @@ const ctx = canvas.getContext('2d');
 const mainMenu = document.getElementById('main-menu');
 const difficultyMenu = document.getElementById('difficulty-menu');
 const settingsMenu = document.getElementById('settings-menu');
-// 💥 НОВОЕ: Ссылка на меню Game Over
 const gameOverMenu = document.getElementById('game-over-menu');
 const finalScoreElement = document.getElementById('final-score');
 
@@ -42,10 +41,9 @@ const HEART_SIZE = 50;
 
 // Game State Variables
 let score = 0;
-let lives = 3; // Стартовое количество жизней
+let lives = 3; 
 let gameOver = false;
 let gameStarted = false; 
-// 💥 НОВОЕ: Переменная для сохранения текущей сложности
 let currentDifficulty = 2; 
 
 // Speed and Spawning Parameters 
@@ -98,18 +96,18 @@ function playLossSoundEffect() {
 // =========================================================================
 
 function showMenu(menuId) {
-    // Скрываем все меню и Canvas
+    // Hide all menus and Canvas
     mainMenu.classList.add('hidden');
     difficultyMenu.classList.add('hidden');
     settingsMenu.classList.add('hidden');
-    gameOverMenu.classList.add('hidden'); // 💥 Скрываем новое меню
+    gameOverMenu.classList.add('hidden'); 
     canvas.classList.add('hidden');
 
     if (bgMusic) {
         bgMusic.pause();
     }
 
-    // Показываем нужный элемент
+    // Show the required element
     if (menuId === 'main') {
         mainMenu.classList.remove('hidden');
     } else if (menuId === 'difficulty') {
@@ -119,17 +117,17 @@ function showMenu(menuId) {
     } else if (menuId === 'game') {
         canvas.classList.remove('hidden');
         bgMusic.play().catch(e => console.log("Music play blocked by browser."));
-    } else if (menuId === 'game-over') { // 💥 НОВАЯ ЛОГИКА
-        finalScoreElement.textContent = `Финальный счет: ${score}`;
+    } else if (menuId === 'game-over') { 
+        // 💥 ИСПРАВЛЕНО: Теперь на английском
+        finalScoreElement.textContent = `Final Score: ${score}`;
         gameOverMenu.classList.remove('hidden');
     }
 }
 
 function startGame(level) {
-    // 💥 СОХРАНЯЕМ ТЕКУЩУЮ СЛОЖНОСТЬ
     currentDifficulty = level; 
     
-    // Сброс состояния игры
+    // Reset game state
     score = 0;
     lives = 3;
     gameOver = false;
@@ -137,7 +135,7 @@ function startGame(level) {
     frameCount = 0;
     gameStarted = true; 
     
-    // Установка сложности
+    // Set difficulty
     switch (level) {
         case 1: baseCoinSpeed = 3; coinSpawnRate = 120; break; 
         case 2: baseCoinSpeed = 4.5; coinSpawnRate = 90; break; 
@@ -149,7 +147,7 @@ function startGame(level) {
     }
     
     showMenu('game');
-    // Запуск цикла игры
+    // Start game loop
     requestAnimationFrame(gameLoop);
 }
 
@@ -173,7 +171,6 @@ function drawItems() {
             ctx.fillStyle = 'red';
             ctx.shadowColor = 'black';
             ctx.shadowBlur = 4;
-            // Используем Pixelify Sans
             ctx.font = `${item.width}px 'Pixelify Sans'`; 
             ctx.fillText('❤️', item.x, item.y + item.height * 0.85); 
             ctx.shadowBlur = 0;
@@ -185,7 +182,6 @@ function drawScore() {
     ctx.shadowColor = 'black';
     ctx.shadowBlur = 4;
     ctx.fillStyle = 'white';
-    // Используем Pixelify Sans
     ctx.font = '24px "Pixelify Sans"'; 
     ctx.fillText('Score: ' + score, 10, 30); 
     ctx.shadowBlur = 0; 
@@ -194,7 +190,6 @@ function drawScore() {
 function drawLives() {
     ctx.shadowColor = 'black';
     ctx.shadowBlur = 4;
-    // Используем Pixelify Sans
     ctx.font = '30px "Pixelify Sans"'; 
     const heartSymbol = '❤️'; 
     
@@ -203,7 +198,6 @@ function drawLives() {
         heartString += heartSymbol + ' ';
     }
     
-    // Сдвиг влево на 200px от правого края (для вмещения 4 сердец)
     const startX = CANVAS_WIDTH - 200; 
     
     ctx.fillText(heartString, startX, 35); 
@@ -214,11 +208,11 @@ function drawGameOver() {
     bgMusic.pause();
     gameStarted = false; 
 
-    // 💥 ИЗМЕНЕНИЕ: Рисуем полупрозрачный фон на Canvas, чтобы было видно, что игра "замерла"
+    // Draw translucent background on Canvas
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; 
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
-    // 💥 ИЗМЕНЕНИЕ: Теперь показываем HTML-меню вместо рисования текста на Canvas
+    // Show the HTML Game Over menu
     showMenu('game-over');
 }
 
@@ -266,7 +260,6 @@ function updateItems() {
                 score++;
                 playCoinSound();
             } else if (item.type === 'heart') {
-                // Добавляем жизнь только если их меньше 4 (максимум = 4)
                 if (lives < 4) { 
                     lives++;
                 }
@@ -329,7 +322,7 @@ function gameLoop() {
 // =========================================================================
 
 function setupEventListeners() {
-    // --- Управление Моти ---
+    // --- Mochi Controls ---
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft' || e.key === 'A' || e.key === 'a') {
             mochi.isMovingLeft = true;
@@ -348,7 +341,7 @@ function setupEventListeners() {
         }
     });
 
-    // --- Кнопки Меню ---
+    // --- Menu Buttons ---
     document.getElementById('btn-play').addEventListener('click', () => {
         showMenu('difficulty');
     });
@@ -361,7 +354,7 @@ function setupEventListeners() {
         showMenu('settings');
     });
 
-    // --- Кнопки Сложности ---
+    // --- Difficulty Buttons ---
     document.getElementById('difficulty-menu').querySelectorAll('button[data-level]').forEach(button => {
         button.addEventListener('click', (e) => {
             const level = parseInt(e.target.getAttribute('data-level'));
@@ -373,9 +366,8 @@ function setupEventListeners() {
         showMenu('main');
     });
     
-    // 💥 НОВОЕ: Кнопки "Игра Окончена"
+    // --- Game Over Buttons ---
     document.getElementById('btn-restart').addEventListener('click', () => {
-        // Запускаем игру с последней выбранной сложностью
         startGame(currentDifficulty); 
     });
     
@@ -384,12 +376,12 @@ function setupEventListeners() {
     });
 
 
-    // --- Кнопки Настроек ---
+    // --- Settings Buttons ---
     document.getElementById('btn-settings-back').addEventListener('click', () => {
         showMenu('main');
     });
 
-    // --- Слайдер Громкости ---
+    // --- Volume Slider ---
     volumeSlider.addEventListener('input', (e) => {
         soundVolume = e.target.value;
         volumeValueSpan.textContent = soundVolume;
@@ -401,15 +393,12 @@ function setupEventListeners() {
         missSound.volume = volumeLevel; 
         lossSoundEffect.volume = volumeLevel; 
         
-        // Попытка проигрывания музыки при изменении громкости
         if (bgMusic.paused) {
             bgMusic.play().catch(() => {});
         }
     });
 }
 
-// 🚩 ИНИЦИАЛИЗАЦИЯ
-// Сначала настраиваем все обработчики событий
+// 🚩 INITIALIZATION
 setupEventListeners(); 
-// Затем показываем главное меню
 showMenu('main');
