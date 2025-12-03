@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mochi: The GEN Coin Catcher</title>
+    <title>Mochi: The $GEN Coin Catcher</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,8 +13,10 @@
 </head>
 <body>
 
-        <h1>Mochi: The <span class="gen-coin-symbol">$GEN</span> Coin Catcher</h1>
-</div>
+    <div class="pixel-title-box">
+        <h1>Mochi: The $GEN Coin Catcher</h1>
+    </div> 
+
     <div class="game-container">
         
         <div id="main-menu" class="game-menu">
@@ -41,6 +43,13 @@
         </div>
         
         <canvas id="gameCanvas" width="480" height="640" class="hidden"></canvas>
+        
+        <div id="game-over-menu" class="game-menu hidden">
+            <h2 id="game-over-title">ИГРА ОКОНЧЕНА!</h2>
+            <p id="final-score">Финальный счет: 0</p>
+            <button id="btn-restart">СЫГРАТЬ СНОВА</button>
+            <button id="btn-back-to-main">В ГЛАВНОЕ МЕНЮ</button>
+        </div>
 
     </div>
     
