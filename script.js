@@ -6,6 +6,9 @@ const ctx = canvas.getContext('2d');
 const mainMenu = document.getElementById('main-menu');
 const difficultyMenu = document.getElementById('difficulty-menu');
 const settingsMenu = document.getElementById('settings-menu');
+// 💥 НОВОЕ: Ссылка на меню Game Over
+const gameOverMenu = document.getElementById('game-over-menu');
+const finalScoreElement = document.getElementById('final-score');
 
 const volumeSlider = document.getElementById('volume-slider');
 const volumeValueSpan = document.getElementById('volume-value');
@@ -42,6 +45,8 @@ let score = 0;
 let lives = 3; // Стартовое количество жизней
 let gameOver = false;
 let gameStarted = false; 
+// 💥 НОВОЕ: Переменная для сохранения текущей сложности
+let currentDifficulty = 2; 
 
 // Speed and Spawning Parameters 
 let baseCoinSpeed = 0; 
@@ -97,6 +102,7 @@ function showMenu(menuId) {
     mainMenu.classList.add('hidden');
     difficultyMenu.classList.add('hidden');
     settingsMenu.classList.add('hidden');
+    gameOverMenu.classList.add('hidden'); // 💥 Скрываем новое меню
     canvas.classList.add('hidden');
 
     if (bgMusic) {
@@ -113,10 +119,16 @@ function showMenu(menuId) {
     } else if (menuId === 'game') {
         canvas.classList.remove('hidden');
         bgMusic.play().catch(e => console.log("Music play blocked by browser."));
+    } else if (menuId === 'game-over') { // 💥 НОВАЯ ЛОГИКА
+        finalScoreElement.textContent = `Финальный счет: ${score}`;
+        gameOverMenu.classList.remove('hidden');
     }
 }
 
 function startGame(level) {
+    // 💥 СОХРАНЯЕМ ТЕКУЩУЮ СЛОЖНОСТЬ
+    currentDifficulty = level; 
+    
     // Сброс состояния игры
     score = 0;
     lives = 3;
@@ -202,20 +214,12 @@ function drawGameOver() {
     bgMusic.pause();
     gameStarted = false; 
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; 
+    // 💥 ИЗМЕНЕНИЕ: Рисуем полупрозрачный фон на Canvas, чтобы было видно, что игра "замерла"
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; 
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    ctx.fillStyle = 'white';
-    ctx.font = '40px "Pixelify Sans"';
-    ctx.textAlign = 'center';
-    ctx.fillText('GAME OVER!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 40); 
     
-    ctx.font = '30px "Pixelify Sans"';
-    ctx.fillText('Final Score: ' + score, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 10); 
-    
-    ctx.font = '20px "Pixelify Sans"';
-    ctx.fillText('Choose difficulty to restart', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 60); 
-    ctx.textAlign = 'left'; 
+    // 💥 ИЗМЕНЕНИЕ: Теперь показываем HTML-меню вместо рисования текста на Canvas
+    showMenu('game-over');
 }
 
 
@@ -262,7 +266,7 @@ function updateItems() {
                 score++;
                 playCoinSound();
             } else if (item.type === 'heart') {
-                // 💥 ИЗМЕНЕНИЕ: Добавляем жизнь только если их меньше 4 (максимум = 4)
+                // Добавляем жизнь только если их меньше 4 (максимум = 4)
                 if (lives < 4) { 
                     lives++;
                 }
@@ -368,6 +372,17 @@ function setupEventListeners() {
     document.getElementById('btn-difficulty-back').addEventListener('click', () => {
         showMenu('main');
     });
+    
+    // 💥 НОВОЕ: Кнопки "Игра Окончена"
+    document.getElementById('btn-restart').addEventListener('click', () => {
+        // Запускаем игру с последней выбранной сложностью
+        startGame(currentDifficulty); 
+    });
+    
+    document.getElementById('btn-back-to-main').addEventListener('click', () => {
+        showMenu('main');
+    });
+
 
     // --- Кнопки Настроек ---
     document.getElementById('btn-settings-back').addEventListener('click', () => {
