@@ -1,0 +1,170 @@
+/* 🚩 ГЛОБАЛЬНЫЙ ФОН САЙТА: ЧЕРНЫЙ СО ЗВЕЗДАМИ */
+body {
+    font-family: 'Pixelify Sans', cursive; 
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    
+    /* 💥 ИЗМЕНЕНИЕ: Черный фон для эффекта космоса */
+    background-color: #000; 
+    
+    /* 💥 НОВЫЙ ЭФФЕКТ: Стилизация под пиксельные звезды */
+    background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                      radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                      radial-gradient(white, rgba(255,255,255,.1) 3px, transparent 20px);
+    background-size: 550px 550px, 350px 350px, 250px 250px;
+    background-position: 0 0, 50px 50px, 100px 100px;
+    
+    margin: 0;
+    padding-top: 20px;
+    font-size: 18px; 
+    color: white; /* Делаем основной текст (если он есть) белым на черном фоне */
+}
+
+/* ------------------------------------------------------------- */
+
+/* 🚩 СТИЛЬ ДЛЯ РАМКИ ЗАГОЛОВКА */
+.pixel-title-box {
+    display: inline-block; 
+    padding: 10px 20px; 
+    margin-bottom: 20px;
+    
+    /* Темный фон для контраста с белым текстом */
+    background-color: #000; 
+    /* Яркая рамка */
+    border: 4px solid #FFD700; 
+    /* Контрастная тень */
+    box-shadow: 0 6px 0 0 #A0522D; 
+}
+
+/* 🚩 СТИЛЬ ДЛЯ САМОГО ЗАГОЛОВКА H1 */
+h1 {
+    margin: 0; 
+    padding: 0;
+    
+    color: white; 
+    font-size: 32px; 
+    
+    /* Тень, чтобы текст выделялся на фоне рамки/фона */
+    text-shadow: 
+        2px 2px 0 #FF4500, /* Оранжево-красная тень для объема */
+        4px 4px 0 #8B0000; /* Темно-красная тень */
+}
+
+
+/* Класс для скрытия элементов */
+.hidden {
+    display: none !important;
+}
+
+/* Стилизация контейнера игры для ФОНА МЕНЮ */
+.game-container {
+    position: relative; 
+    width: 480px; 
+    height: 640px; 
+    /* Рамка игры */
+    border: 5px solid #4CAF50; 
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.8); /* Светящийся эффект для контраста */
+}
+
+/* Фон для меню */
+.game-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* ⚠️ Убедитесь, что spain_bg.png есть в папке */
+    background-image: url('spain_bg.png'); 
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.7) blur(2px); 
+    z-index: 0; 
+}
+
+
+/* Стили для игрового поля (canvas) */
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+/* Стили для меню */
+.game-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    background-color: rgba(0, 0, 0, 0.9); 
+    
+    padding: 30px;
+    box-shadow: 0 8px 0 #888; 
+    text-align: center;
+    width: 280px;
+    border-radius: 0; 
+    border: 4px solid #FF9800; 
+    z-index: 20; 
+}
+
+.game-menu h2 {
+    color: #FDD835; 
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px #C62828, 4px 4px 0 #000;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Стили для кнопок */
+.game-menu button {
+    display: block;
+    width: 100%;
+    padding: 12px 15px; 
+    margin-bottom: 15px;
+    font-size: 22px; 
+    cursor: pointer;
+    
+    background-color: #4CAF50; 
+    color: white;
+    border: none;
+    border-radius: 0; 
+    
+    box-shadow: 0 6px 0 0 #388E3C; 
+    
+    transition: all 0.05s;
+    
+    text-shadow: 2px 2px 0 #000, -2px -2px 0 #000;
+    font-weight: bold;
+}
+
+.game-menu button:hover {
+    background-color: #388E3C; 
+    box-shadow: 0 4px 0 0 #2E7D32;
+    transform: translateY(2px); 
+}
+
+.game-menu button:active {
+    box-shadow: 0 0px 0 0 #2E7D32;
+    transform: translateY(6px); 
+}
+
+
+/* Стили для слайдера громкости */
+.game-menu label {
+    color: white;
+}
+#volume-slider {
+    width: 100%;
+    margin-bottom: 15px;
+    border: none; 
+}
+#volume-value {
+    color: #FDD835;
+    font-size: 22px;
+    display: block;
+    margin-bottom: 10px;
+}
