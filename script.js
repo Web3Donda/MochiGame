@@ -325,23 +325,23 @@ function gameLoop() {
 function setupEventListeners() {
     // --- Mochi Controls (Arrow Keys and WASD) ---
     document.addEventListener('keydown', (e) => {
-        // Left movement: ArrowLeft or A
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        // Left movement: ArrowLeft or KeyA (A/a)
+        if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
             mochi.isMovingLeft = true;
         } 
-        // Right movement: ArrowRight or D
-        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        // Right movement: ArrowRight or KeyD (D/d)
+        else if (e.key === 'ArrowRight' || e.code === 'KeyD') {
             mochi.isMovingRight = true;
         }
     });
 
     document.addEventListener('keyup', (e) => {
-        // Stop Left movement: ArrowLeft or A
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        // Stop Left movement: ArrowLeft or KeyA (A/a)
+        if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
             mochi.isMovingLeft = false;
         } 
-        // Stop Right movement: ArrowRight or D
-        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        // Stop Right movement: ArrowRight or KeyD (D/d)
+        else if (e.key === 'ArrowRight' || e.code === 'KeyD') {
             mochi.isMovingRight = false;
         }
     });
