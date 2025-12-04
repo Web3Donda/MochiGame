@@ -26,6 +26,10 @@ coinImage.src = 'gencoin.jpg';
 const bgImage = new Image();
 bgImage.src = 'spain_bg.png'; 
 
+// 💥 НОВАЯ КАРТИНКА: Бомба
+const bombImage = new Image();
+bombImage.src = 'bomb.png'; 
+
 // --- Load Audio ---
 const bgMusic = new Audio('bg_music.mp3'); 
 bgMusic.loop = true; 
@@ -33,11 +37,14 @@ const coinSound = new Audio('coin_sound.wav');
 const heartSound = new Audio('coin_sound.wav'); 
 const missSound = new Audio('miss_sound.wav'); 
 const lossSoundEffect = new Audio('impact_loss.mp3'); 
+// 💥 НОВЫЙ ЗВУК: Удар бомбы (используем lossSoundEffect для удара по игроку)
+const bombImpactSound = lossSoundEffect; 
 
 // Game Object Sizes
 const MOCHI_SIZE = 120;
 const COIN_SIZE = 60; 
 const HEART_SIZE = 50; 
+const BOMB_SIZE = 60; // Размер бомбы
 
 // Game State Variables
 let score = 0;
@@ -51,6 +58,8 @@ let baseCoinSpeed = 0;
 let coinSpawnRate = 0; 
 let frameCount = 0;
 let soundVolume = 75; 
+// 💥 НОВЫЕ ПАРАМЕТРЫ: Шанс появления бомбы (1 к 150 кадрам)
+const BOMB_SPAWN_RATE = 150;
 
 // --- Player (Mochi) ---
 const mochi = {
@@ -63,7 +72,7 @@ const mochi = {
     isMovingRight: false
 };
 
-// --- Items (Coins and Hearts) ---
+// --- Items (Coins, Hearts, and Bombs) ---
 let items = []; 
 
 // =========================================================================
@@ -174,6 +183,8 @@ function drawItems() {
             ctx.font = `${item.width}px 'Pixelify Sans'`; 
             ctx.fillText('❤️', item.x, item.y + item.height * 0.85); 
             ctx.shadowBlur = 0;
+        } else if (item.type === 'bomb') { // 💥 РИСУЕМ БОМБУ
+            ctx.drawImage(bombImage, item.x, item.y, item.width, item.height);
         }
     });
 }
@@ -237,9 +248,9 @@ function updateItems() {
 
         // 1. Check: Item missed Mochi
         if (item.y > CANVAS_HEIGHT) {
+            // Только монеты (coin) наказывают за промах
             if (item.type === 'coin') {
                 playLossSoundEffect(); 
-                
                 lives--; 
                 
                 if (lives <= 0) {
@@ -265,6 +276,12 @@ function updateItems() {
                     lives++;
                 }
                 playHeartSound();
+            } else if (item.type === 'bomb') { // 💥 КОЛЛИЗИЯ С БОМБОЙ
+                lives--;
+                bombImpactSound.play(); // Звук удара/взрыва
+                if (lives <= 0) {
+                    gameOver = true;
+                }
             }
             
             items.splice(i, 1); 
@@ -273,10 +290,24 @@ function updateItems() {
 }
 
 function spawnItem() {
+    // Шанс появления сердца (1 к 50)
     const isHeart = Math.random() < 1 / 50; 
-    
-    const itemType = isHeart ? 'heart' : 'coin';
-    const itemSize = isHeart ? HEART_SIZE : COIN_SIZE;
+    // Шанс появления бомбы (1 к 100). Мы делаем его ниже, чем монеты.
+    const isBomb = Math.random() < 1 / 100;
+
+    let itemType;
+    let itemSize;
+
+    if (isHeart) {
+        itemType = 'heart';
+        itemSize = HEART_SIZE;
+    } else if (isBomb) {
+        itemType = 'bomb'; // 💥 Тип элемента - бомба
+        itemSize = BOMB_SIZE;
+    } else {
+        itemType = 'coin';
+        itemSize = COIN_SIZE;
+    }
 
     const item = {
         type: itemType,
@@ -305,7 +336,10 @@ function gameLoop() {
     updateMochi();
     updateItems(); 
     
+    // Монеты/сердца генерируются с частотой coinSpawnRate
     if (frameCount % coinSpawnRate === 0) {
+        // Мы вызываем spawnItem() в каждом цикле coinSpawnRate, 
+        // а сама spawnItem() решает, что именно выпадет: монета, сердце или бомба (с определенным шансом).
         spawnItem(); 
     }
     frameCount++;
@@ -323,24 +357,24 @@ function gameLoop() {
 // =========================================================================
 
 function setupEventListeners() {
-    // --- Mochi Controls (Arrow Keys and WASD) ---
+    // --- Mochi Controls (Arrow Keys and WASD/e.code) ---
     document.addEventListener('keydown', (e) => {
-        // Left movement: ArrowLeft or KeyA (A/a)
+        // Left movement: ArrowLeft or KeyA (A/Ф)
         if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
             mochi.isMovingLeft = true;
         } 
-        // Right movement: ArrowRight or KeyD (D/d)
+        // Right movement: ArrowRight or KeyD (D/В)
         else if (e.key === 'ArrowRight' || e.code === 'KeyD') {
             mochi.isMovingRight = true;
         }
     });
 
     document.addEventListener('keyup', (e) => {
-        // Stop Left movement: ArrowLeft or KeyA (A/a)
+        // Stop Left movement: ArrowLeft or KeyA (A/Ф)
         if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
             mochi.isMovingLeft = false;
         } 
-        // Stop Right movement: ArrowRight or KeyD (D/d)
+        // Stop Right movement: ArrowRight or KeyD (D/В)
         else if (e.key === 'ArrowRight' || e.code === 'KeyD') {
             mochi.isMovingRight = false;
         }
