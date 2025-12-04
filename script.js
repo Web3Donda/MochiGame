@@ -26,7 +26,7 @@ coinImage.src = 'gencoin.jpg';
 const bgImage = new Image();
 bgImage.src = 'spain_bg.png'; 
 
-// 💥 НОВАЯ КАРТИНКА: Бомба
+// 💣 Бомба
 const bombImage = new Image();
 bombImage.src = 'bomb.png'; 
 
@@ -37,29 +37,26 @@ const coinSound = new Audio('coin_sound.wav');
 const heartSound = new Audio('coin_sound.wav'); 
 const missSound = new Audio('miss_sound.wav'); 
 const lossSoundEffect = new Audio('impact_loss.mp3'); 
-// 💥 НОВЫЙ ЗВУК: Удар бомбы (используем lossSoundEffect для удара по игроку)
 const bombImpactSound = lossSoundEffect; 
 
 // Game Object Sizes
 const MOCHI_SIZE = 120;
 const COIN_SIZE = 60; 
 const HEART_SIZE = 50; 
-const BOMB_SIZE = 60; // Размер бомбы
+const BOMB_SIZE = 60;
 
 // Game State Variables
 let score = 0;
 let lives = 3; 
 let gameOver = false;
 let gameStarted = false; 
-let currentDifficulty = 2; // Saves the current difficulty level
+let currentDifficulty = 2;
 
 // Speed and Spawning Parameters 
 let baseCoinSpeed = 0; 
 let coinSpawnRate = 0; 
 let frameCount = 0;
 let soundVolume = 75; 
-// 💥 НОВЫЕ ПАРАМЕТРЫ: Шанс появления бомбы (1 к 150 кадрам)
-const BOMB_SPAWN_RATE = 150;
 
 // --- Player (Mochi) ---
 const mochi = {
@@ -183,7 +180,7 @@ function drawItems() {
             ctx.font = `${item.width}px 'Pixelify Sans'`; 
             ctx.fillText('❤️', item.x, item.y + item.height * 0.85); 
             ctx.shadowBlur = 0;
-        } else if (item.type === 'bomb') { // 💥 РИСУЕМ БОМБУ
+        } else if (item.type === 'bomb') { // 💣 РИСУЕМ БОМБУ
             ctx.drawImage(bombImage, item.x, item.y, item.width, item.height);
         }
     });
@@ -276,7 +273,7 @@ function updateItems() {
                     lives++;
                 }
                 playHeartSound();
-            } else if (item.type === 'bomb') { // 💥 КОЛЛИЗИЯ С БОМБОЙ
+            } else if (item.type === 'bomb') { // 💣 КОЛЛИЗИЯ С БОМБОЙ
                 lives--;
                 bombImpactSound.play(); // Звук удара/взрыва
                 if (lives <= 0) {
@@ -292,8 +289,9 @@ function updateItems() {
 function spawnItem() {
     // Шанс появления сердца (1 к 50)
     const isHeart = Math.random() < 1 / 50; 
-    // Шанс появления бомбы (1 к 100). Мы делаем его ниже, чем монеты.
-    const isBomb = Math.random() < 1 / 100;
+    
+    // 💥 Шанс появления бомбы теперь 1 к 50 (чаще)
+    const isBomb = Math.random() < 1 / 50; 
 
     let itemType;
     let itemSize;
@@ -302,7 +300,7 @@ function spawnItem() {
         itemType = 'heart';
         itemSize = HEART_SIZE;
     } else if (isBomb) {
-        itemType = 'bomb'; // 💥 Тип элемента - бомба
+        itemType = 'bomb'; 
         itemSize = BOMB_SIZE;
     } else {
         itemType = 'coin';
@@ -336,10 +334,7 @@ function gameLoop() {
     updateMochi();
     updateItems(); 
     
-    // Монеты/сердца генерируются с частотой coinSpawnRate
     if (frameCount % coinSpawnRate === 0) {
-        // Мы вызываем spawnItem() в каждом цикле coinSpawnRate, 
-        // а сама spawnItem() решает, что именно выпадет: монета, сердце или бомба (с определенным шансом).
         spawnItem(); 
     }
     frameCount++;
