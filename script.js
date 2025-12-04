@@ -44,7 +44,7 @@ let score = 0;
 let lives = 3; 
 let gameOver = false;
 let gameStarted = false; 
-let currentDifficulty = 2; 
+let currentDifficulty = 2; // Saves the current difficulty level
 
 // Speed and Spawning Parameters 
 let baseCoinSpeed = 0; 
@@ -118,7 +118,7 @@ function showMenu(menuId) {
         canvas.classList.remove('hidden');
         bgMusic.play().catch(e => console.log("Music play blocked by browser."));
     } else if (menuId === 'game-over') { 
-        // 💥 ИСПРАВЛЕНО: Теперь на английском
+        // Display final score on the HTML element
         finalScoreElement.textContent = `Final Score: ${score}`;
         gameOverMenu.classList.remove('hidden');
     }
@@ -260,6 +260,7 @@ function updateItems() {
                 score++;
                 playCoinSound();
             } else if (item.type === 'heart') {
+                // Limit lives to max 4 hearts
                 if (lives < 4) { 
                     lives++;
                 }
@@ -322,21 +323,25 @@ function gameLoop() {
 // =========================================================================
 
 function setupEventListeners() {
-    // --- Mochi Controls ---
+    // --- Mochi Controls (Arrow Keys and WASD) ---
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'A' || e.key === 'a') {
+        // Left movement: ArrowLeft or A
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
             mochi.isMovingLeft = true;
         } 
-        else if (e.key === 'ArrowRight' || e.key === 'D' || e.key === 'd') {
+        // Right movement: ArrowRight or D
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
             mochi.isMovingRight = true;
         }
     });
 
     document.addEventListener('keyup', (e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'A' || e.key === 'a') {
+        // Stop Left movement: ArrowLeft or A
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
             mochi.isMovingLeft = false;
         } 
-        else if (e.key === 'ArrowRight' || e.key === 'D' || e.key === 'd') {
+        // Stop Right movement: ArrowRight or D
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
             mochi.isMovingRight = false;
         }
     });
