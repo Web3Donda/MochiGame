@@ -8,7 +8,6 @@ const difficultyMenu = document.getElementById('difficulty-menu');
 const settingsMenu = document.getElementById('settings-menu');
 const gameOverMenu = document.getElementById('game-over-menu');
 const finalScoreElement = document.getElementById('final-score');
-
 const volumeSlider = document.getElementById('volume-slider');
 const volumeValueSpan = document.getElementById('volume-value');
 
@@ -19,14 +18,10 @@ const CANVAS_HEIGHT = canvas.height;
 // --- Load Images ---
 const mochiImage = new Image();
 mochiImage.src = 'Mochi.png'; 
-
 const coinImage = new Image();
 coinImage.src = 'gencoin.jpg'; 
-
 const bgImage = new Image();
 bgImage.src = 'spain_bg.png'; 
-
-// 💣 Бомба
 const bombImage = new Image();
 bombImage.src = 'bomb.png'; 
 
@@ -69,51 +64,27 @@ const mochi = {
     isMovingRight: false
 };
 
-// --- Items (Coins, Hearts, and Bombs) ---
 let items = []; 
 
 // =========================================================================
-// SOUND FUNCTIONS 
+// SOUND AND MENU LOGIC
 // =========================================================================
 
-function playCoinSound() {
-    coinSound.currentTime = 0; 
-    coinSound.play();
-}
+function playCoinSound() { coinSound.currentTime = 0; coinSound.play(); }
+function playHeartSound() { heartSound.currentTime = 0; heartSound.play(); }
+function playMissSound() { missSound.currentTime = 0; missSound.play(); }
+function playLossSoundEffect() { lossSoundEffect.currentTime = 0; lossSoundEffect.play(); }
 
-function playHeartSound() {
-    heartSound.currentTime = 0;
-    heartSound.play();
-}
-
-function playMissSound() {
-    missSound.currentTime = 0;
-    missSound.play();
-}
-
-function playLossSoundEffect() {
-    lossSoundEffect.currentTime = 0;
-    lossSoundEffect.play();
-}
-
-
-// =========================================================================
-// MENU LOGIC
-// =========================================================================
 
 function showMenu(menuId) {
-    // Hide all menus and Canvas
     mainMenu.classList.add('hidden');
     difficultyMenu.classList.add('hidden');
     settingsMenu.classList.add('hidden');
     gameOverMenu.classList.add('hidden'); 
     canvas.classList.add('hidden');
 
-    if (bgMusic) {
-        bgMusic.pause();
-    }
+    if (bgMusic) { bgMusic.pause(); }
 
-    // Show the required element
     if (menuId === 'main') {
         mainMenu.classList.remove('hidden');
     } else if (menuId === 'difficulty') {
@@ -124,7 +95,6 @@ function showMenu(menuId) {
         canvas.classList.remove('hidden');
         bgMusic.play().catch(e => console.log("Music play blocked by browser."));
     } else if (menuId === 'game-over') { 
-        // Display final score on the HTML element
         finalScoreElement.textContent = `Final Score: ${score}`;
         gameOverMenu.classList.remove('hidden');
     }
@@ -133,7 +103,6 @@ function showMenu(menuId) {
 function startGame(level) {
     currentDifficulty = level; 
     
-    // Reset game state
     score = 0;
     lives = 3;
     gameOver = false;
@@ -141,11 +110,10 @@ function startGame(level) {
     frameCount = 0;
     gameStarted = true; 
     
-    // Set difficulty
     switch (level) {
         case 1: baseCoinSpeed = 3; coinSpawnRate = 120; break; 
         case 2: baseCoinSpeed = 4.5; coinSpawnRate = 90; break; 
-        case 3: // Mochi Hunter (HARDCORE)
+        case 3: 
             baseCoinSpeed = 7.5; 
             coinSpawnRate = 50; 
             break;
@@ -153,7 +121,6 @@ function startGame(level) {
     }
     
     showMenu('game');
-    // Start game loop
     requestAnimationFrame(gameLoop);
 }
 
@@ -161,13 +128,8 @@ function startGame(level) {
 // DRAW FUNCTIONS
 // =========================================================================
 
-function drawBackground() {
-    ctx.drawImage(bgImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-}
-
-function drawMochi() {
-    ctx.drawImage(mochiImage, mochi.x, mochi.y, mochi.width, mochi.height);
-}
+function drawBackground() { ctx.drawImage(bgImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); }
+function drawMochi() { ctx.drawImage(mochiImage, mochi.x, mochi.y, mochi.width, mochi.height); }
 
 function drawItems() {
     items.forEach(item => {
@@ -180,7 +142,7 @@ function drawItems() {
             ctx.font = `${item.width}px 'Pixelify Sans'`; 
             ctx.fillText('❤️', item.x, item.y + item.height * 0.85); 
             ctx.shadowBlur = 0;
-        } else if (item.type === 'bomb') { // 💣 РИСУЕМ БОМБУ
+        } else if (item.type === 'bomb') {
             ctx.drawImage(bombImage, item.x, item.y, item.width, item.height);
         }
     });
@@ -200,14 +162,11 @@ function drawLives() {
     ctx.shadowBlur = 4;
     ctx.font = '30px "Pixelify Sans"'; 
     const heartSymbol = '❤️'; 
-    
     let heartString = '';
     for (let i = 0; i < lives; i++) {
         heartString += heartSymbol + ' ';
     }
-    
     const startX = CANVAS_WIDTH - 200; 
-    
     ctx.fillText(heartString, startX, 35); 
     ctx.shadowBlur = 0; 
 }
@@ -215,12 +174,8 @@ function drawLives() {
 function drawGameOver() {
     bgMusic.pause();
     gameStarted = false; 
-
-    // Draw translucent background on Canvas
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; 
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    
-    // Show the HTML Game Over menu
     showMenu('game-over');
 }
 
@@ -245,11 +200,9 @@ function updateItems() {
 
         // 1. Check: Item missed Mochi
         if (item.y > CANVAS_HEIGHT) {
-            // Только монеты (coin) наказывают за промах
             if (item.type === 'coin') {
                 playLossSoundEffect(); 
                 lives--; 
-                
                 if (lives <= 0) {
                     gameOver = true;
                 }
@@ -268,14 +221,13 @@ function updateItems() {
                 score++;
                 playCoinSound();
             } else if (item.type === 'heart') {
-                // Limit lives to max 4 hearts
                 if (lives < 4) { 
                     lives++;
                 }
                 playHeartSound();
-            } else if (item.type === 'bomb') { // 💣 КОЛЛИЗИЯ С БОМБОЙ
+            } else if (item.type === 'bomb') {
                 lives--;
-                bombImpactSound.play(); // Звук удара/взрыва
+                bombImpactSound.play();
                 if (lives <= 0) {
                     gameOver = true;
                 }
@@ -287,10 +239,9 @@ function updateItems() {
 }
 
 function spawnItem() {
-    // Шанс появления сердца (1 к 50)
+    // Шанс сердца (1 к 50)
     const isHeart = Math.random() < 1 / 50; 
-    
-    // 💥 Шанс появления бомбы теперь 1 к 50 (чаще)
+    // Шанс бомбы (1 к 50)
     const isBomb = Math.random() < 1 / 50; 
 
     let itemType;
@@ -352,7 +303,30 @@ function gameLoop() {
 // =========================================================================
 
 function setupEventListeners() {
-    // --- Mochi Controls (Arrow Keys and WASD/e.code) ---
+    
+    // Получение элементов управления для мобильных
+    const touchLeft = document.getElementById('touch-left');
+    const touchRight = document.getElementById('touch-right');
+
+    // Функция, запускающая движение
+    const startMoving = (direction) => {
+        if (direction === 'left') {
+            mochi.isMovingLeft = true;
+        } else if (direction === 'right') {
+            mochi.isMovingRight = true;
+        }
+    };
+
+    // Функция, останавливающая движение
+    const stopMoving = (direction) => {
+        if (direction === 'left') {
+            mochi.isMovingLeft = false;
+        } else if (direction === 'right') {
+            mochi.isMovingRight = false;
+        }
+    };
+    
+    // --- PC Controls (Arrow Keys and WASD/e.code) ---
     document.addEventListener('keydown', (e) => {
         // Left movement: ArrowLeft or KeyA (A/Ф)
         if (e.key === 'ArrowLeft' || e.code === 'KeyA') {
@@ -374,6 +348,24 @@ function setupEventListeners() {
             mochi.isMovingRight = false;
         }
     });
+
+    // 💥 МОБИЛЬНОЕ УПРАВЛЕНИЕ (Touch and Click) 💥
+
+    // События для ЛЕВОЙ кнопки
+    if (touchLeft) {
+        touchLeft.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('left'); }, { passive: false });
+        touchLeft.addEventListener('touchend', () => stopMoving('left'));
+        touchLeft.addEventListener('mousedown', () => startMoving('left'));
+        touchLeft.addEventListener('mouseup', () => stopMoving('left'));
+    }
+
+    // События для ПРАВОЙ кнопки
+    if (touchRight) {
+        touchRight.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('right'); }, { passive: false });
+        touchRight.addEventListener('touchend', () => stopMoving('right'));
+        touchRight.addEventListener('mousedown', () => startMoving('right'));
+        touchRight.addEventListener('mouseup', () => stopMoving('right'));
+    }
 
     // --- Menu Buttons ---
     document.getElementById('btn-play').addEventListener('click', () => {
